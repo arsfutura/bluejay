@@ -164,6 +164,11 @@ public class Bluejay: NSObject { //swiftlint:disable:this type_body_length
     }
 
     // MARK: - Logging
+    
+    // Allow apps to determine `XCGLogger.Level`.
+    public func setLoggerLevel(_ level: XCGLogger.Level) {
+        logger.outputLevel = level
+    }
 
     /**
      * Allow apps that use Bluejay to log alongside of Bluejay's internal logs.
@@ -1575,10 +1580,6 @@ extension Bluejay: PeripheralDelegate {
 }
 
 let logger = XCGLogger(identifier: "Bluejay", includeDefaultDestinations: true)
-
-public func setLoggerLevel(_ level: XCGLogger.Level) {
-    logger.outputLevel = level
-}
 
 /// Convenience function to log information specific to Bluejay within the framework.
 func debugLog(_ string: String) {
