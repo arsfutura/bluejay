@@ -1313,7 +1313,9 @@ extension Bluejay: CBCentralManagerDelegate {
         connectedPeripheral = connectingPeripheral
         connectingPeripheral = nil
 
-        precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
+        // FIXME: This causes framework to error out. Maybe rather ignore thi function call if peripherals are nil.
+//        precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
+        guard connectedPeripheral != nil else { return }
 
         shouldAutoReconnect = true
         debugLog("Should auto-reconnect: \(shouldAutoReconnect)")
