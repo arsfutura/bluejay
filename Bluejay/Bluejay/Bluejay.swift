@@ -1304,32 +1304,36 @@ extension Bluejay: CBCentralManagerDelegate {
 
     /**
      When connected, update Bluejay's states by updating the values for `connectingPeripheral`, `connectedPeripheral`, and `shouldAutoReconnect`. Also, make sure to broadcast the event to observers, and notify the queue so that the current operation in-flight can process this event and get a chance to finish.
-    */
+     */
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         debugLog("Central manager did connect to: \(peripheral.name ?? peripheral.identifier.uuidString)")
-
+        
         connectingCallback = nil
-
-        connectedPeripheral = connectingPeripheral
+        
+        // This is not a good long term solution. Rather, it's a short term solution that works for our use case, until
+        // the Bluejay team can properly fix the issue.
+        // When State Restoration of a 'connected' peripheral occurs, Bluejay doesn't believe that this function will be called
+        // for the peripheral, but in our testing, it is. Bluejay clears out the connectingPeripheral variable, because it thinks
+        // the connection is complete, and that caused this line to crash. Instead, for that 1 case, just keep the connected
+        // peripheral and call the callbacks.
+        connectedPeripheral = connectingPeripheral ?? connectedPeripheral
         connectingPeripheral = nil
-
-        // FIXME: This causes framework to error out. Maybe rather ignore thi function call if peripherals are nil.
-//        precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
-        guard connectedPeripheral != nil else { return }
-
+        
+        precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
+        
         shouldAutoReconnect = true
         debugLog("Should auto-reconnect: \(shouldAutoReconnect)")
-
+        
         queue.process(event: .didConnectPeripheral(connectedPeripheral!), error: nil)
-
+        
         for observer in connectionObservers {
             observer.weakReference?.connected(to: connectedPeripheral!.identifier)
         }
     }
-
+    
     /**
      Handle a disconnection event from Core Bluetooth by figuring out what kind of disconnection it is (planned or unplanned), and updating Bluejay's internal state and sending notifications as appropriate.
-    */
+     */
     public func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         // swiftlint:disable:previous cyclomatic_complexity
         let peripheralString = peripheral.name ?? peripheral.identifier.uuidString
