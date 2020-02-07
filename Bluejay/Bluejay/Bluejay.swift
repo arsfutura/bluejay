@@ -1316,18 +1316,15 @@ extension Bluejay: CBCentralManagerDelegate {
         // for the peripheral, but in our testing, it is. Bluejay clears out the connectingPeripheral variable, because it thinks
         // the connection is complete, and that caused this line to crash. Instead, for that 1 case, just keep the connected
         // peripheral and call the callbacks.
-        
         connectedPeripheral = connectingPeripheral ?? connectedPeripheral
+        connectingPeripheral = nil
         
         precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
         
         shouldAutoReconnect = true
         debugLog("Should auto-reconnect: \(shouldAutoReconnect)")
         
-        if connectingPeripheral != nil {
-            queue.process(event: .didConnectPeripheral(connectedPeripheral!), error: nil)
-        }
-        connectingPeripheral = nil
+        queue.process(event: .didConnectPeripheral(connectedPeripheral!), error: nil)
         
         for observer in connectionObservers {
             observer.weakReference?.connected(to: connectedPeripheral!.identifier)
