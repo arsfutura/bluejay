@@ -1310,23 +1310,24 @@ extension Bluejay: CBCentralManagerDelegate {
         
         connectingCallback = nil
         
-        guard !isRestoring else { return }
-
         // This is not a good long term solution. Rather, it's a short term solution that works for our use case, until
         // the Bluejay team can properly fix the issue.
         // When State Restoration of a 'connected' peripheral occurs, Bluejay doesn't believe that this function will be called
         // for the peripheral, but in our testing, it is. Bluejay clears out the connectingPeripheral variable, because it thinks
         // the connection is complete, and that caused this line to crash. Instead, for that 1 case, just keep the connected
         // peripheral and call the callbacks.
+        
         connectedPeripheral = connectingPeripheral ?? connectedPeripheral
-        connectingPeripheral = nil
         
         precondition(connectedPeripheral != nil, "Connected peripheral is assigned a nil value despite Bluejay has successfully finished a connection.")
         
         shouldAutoReconnect = true
         debugLog("Should auto-reconnect: \(shouldAutoReconnect)")
         
-        queue.process(event: .didConnectPeripheral(connectedPeripheral!), error: nil)
+        if connectingPeripheral != nil {
+            queue.process(event: .didConnectPeripheral(connectedPeripheral!), error: nil)
+        }
+        connectingPeripheral = nil
         
         for observer in connectionObservers {
             observer.weakReference?.connected(to: connectedPeripheral!.identifier)
