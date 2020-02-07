@@ -1310,6 +1310,8 @@ extension Bluejay: CBCentralManagerDelegate {
         
         connectingCallback = nil
         
+        guard !isRestoring else { return }
+
         // This is not a good long term solution. Rather, it's a short term solution that works for our use case, until
         // the Bluejay team can properly fix the issue.
         // When State Restoration of a 'connected' peripheral occurs, Bluejay doesn't believe that this function will be called
