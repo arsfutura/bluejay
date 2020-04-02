@@ -83,6 +83,7 @@
 		B8F8C0ED1E4E7CA300A0D0F7 /* Disconnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8F8C0EC1E4E7CA300A0D0F7 /* Disconnection.swift */; };
 		B8FE9DF51E73597A00D361CE /* RSSIObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FE9DF41E73597A00D361CE /* RSSIObserver.swift */; };
 		E33A92A4E6F64E08E1744EA5 /* Pods_DittojayHeartSensorDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B4F875274536E6A2FACE6253 /* Pods_DittojayHeartSensorDemo.framework */; };
+		F6DE13782435DE2700236851 /* ScanRestorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6DE13772435DE2700236851 /* ScanRestorer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -213,6 +214,7 @@
 		B8FE9DF41E73597A00D361CE /* RSSIObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RSSIObserver.swift; sourceTree = "<group>"; };
 		D3A376B191A26044FDEBF5C5 /* Pods-Bluejay.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Bluejay.release.xcconfig"; path = "Pods/Target Support Files/Pods-Bluejay/Pods-Bluejay.release.xcconfig"; sourceTree = "<group>"; };
 		DF2D4A8FB079296042210FA7 /* Pods-DittojayHeartSensorDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DittojayHeartSensorDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-DittojayHeartSensorDemo/Pods-DittojayHeartSensorDemo.release.xcconfig"; sourceTree = "<group>"; };
+		F6DE13772435DE2700236851 /* ScanRestorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanRestorer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -476,6 +478,7 @@
 				B87CBB4C21C05F8400B67B5B /* BackgroundRestoreConfig.swift */,
 				B83A67CD219F45C300076B9F /* BackgroundRestorer.swift */,
 				B8383B6F21C31B2D00F07306 /* ListenRestorer.swift */,
+				F6DE13772435DE2700236851 /* ScanRestorer.swift */,
 			);
 			name = "Background Restoration";
 			sourceTree = "<group>";
@@ -810,6 +813,7 @@
 				B8330D5121B9E03B006F29C7 /* ListenCallback.swift in Sources */,
 				B8022D981E1EEED900EA360B /* WriteResult.swift in Sources */,
 				B89AA4881E30373D006BA376 /* Scan.swift in Sources */,
+				F6DE13782435DE2700236851 /* ScanRestorer.swift in Sources */,
 				2F74765D212E95F800D74B87 /* WarningOptions.swift in Sources */,
 				B86586A9216D1105002E8E2D /* StartOptions.swift in Sources */,
 				B8FE9DF51E73597A00D361CE /* RSSIObserver.swift in Sources */,

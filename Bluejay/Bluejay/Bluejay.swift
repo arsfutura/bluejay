@@ -66,9 +66,15 @@ public class Bluejay: NSObject { //swiftlint:disable:this type_body_length
 
     /// The delegate responsible for handling listen restoration results.
     private weak var listenRestorer: ListenRestorer?
+    
+    /// Thhe delegate responsible for handling background scan restoration results.
+    private weak var scanRestorer: ScanRestorer?
 
     /// Determines whether Bluejay is currently performing state restoration.
     private var isRestoring = false
+
+    /// Determines whether Bluejay is currently performing scan restoration.
+    private var isRestoringScan = false
 
     /// Reference to the startup, **not Bluejay**, background task used for supporting state restoration.
     private var startupBackgroundTask: UIBackgroundTaskIdentifier = UIBackgroundTaskIdentifier.invalid
@@ -344,6 +350,7 @@ public class Bluejay: NSObject { //swiftlint:disable:this type_body_length
                 restoreIdentifier = backgroundRestoreConfig.restoreIdentifier
                 backgroundRestorer = backgroundRestoreConfig.backgroundRestorer
                 listenRestorer = backgroundRestoreConfig.listenRestorer
+                scanRestorer = backgroundRestoreConfig.scanRestorer
                 isRestoring = backgroundRestoreConfig.isRestoringFromBackground
                 managerOptions[CBCentralManagerOptionRestoreIdentifierKey] = restoreIdentifier
 
@@ -1268,6 +1275,10 @@ extension Bluejay: CBCentralManagerDelegate {
     public func centralManager(_ central: CBCentralManager, willRestoreState dict: [String: Any]) {
         debugLog("Central manager will restore state.")
 
+        if dict[CBCentralManagerRestoredStateScanServicesKey] != nil {
+            isRestoringScan = true
+        }
+        
         guard let peripherals = dict[CBCentralManagerRestoredStatePeripheralsKey] as? [CBPeripheral], let cbPeripheral = peripherals.first else {
             debugLog("No peripherals found during state restoration.")
             endStartupBackgroundTask()
@@ -1519,9 +1530,21 @@ extension Bluejay: CBCentralManagerDelegate {
         // let peripheralString = advertisementData[CBAdvertisementDataLocalNameKey] ?? peripheral.identifier.uuidString
         // log("Did discover: \(peripheralString)")
 
-        queue.process(event: .didDiscoverPeripheral(peripheral, advertisementData, RSSI), error: nil)
+        if isRestoring, isRestoringScan, let restorer = backgroundRestorer {
+            let identifier = PeripheralIdentifier(uuid: peripheral.identifier, name: peripheral.name)
+            let backgroundRestoreCompletion = restorer.didRestoreConnection(to: identifier)
+            
+            switch backgroundRestoreCompletion {
+            case .callback(let userCallback):
+                userCallback()
+            case .continue:
+                break
+            }
+        } else if isScanning {
+            queue.process(event: .didDiscoverPeripheral(peripheral, advertisementData, RSSI), error: nil)
+        }
     }
-
+    
 }
 
 /// Allows Bluejay to receive events and delegation from its queue.

@@ -18,10 +18,13 @@ public struct BackgroundRestoreConfig {
 
     /// A listen restorer is required for any potential unhandled listens when restoring to a connected peripheral.
     public let listenRestorer: ListenRestorer
+    
+    /// A scan restorer is required to handle the results of a scan restoration.
+    public let scanRestorer: ScanRestorer
 
     /// The launch options from `application(_:didFinishLaunchingWithOptions:)` is required to parse the restore identifier.
     public let launchOptions: LaunchOptions
-
+    
     /// Convenience return of bluetooth central keys from the launch options.
     public var centralKeys: [String]? {
         return launchOptions?[UIApplication.LaunchOptionsKey.bluetoothCentrals] as? [String]
@@ -45,10 +48,12 @@ public struct BackgroundRestoreConfig {
         restoreIdentifier: RestoreIdentifier,
         backgroundRestorer: BackgroundRestorer,
         listenRestorer: ListenRestorer,
+        scanRestorer: ScanRestorer,
         launchOptions: LaunchOptions) {
         self.restoreIdentifier = restoreIdentifier
         self.backgroundRestorer = backgroundRestorer
         self.listenRestorer = listenRestorer
+        self.scanRestorer = scanRestorer
         self.launchOptions = launchOptions
     }
 }
