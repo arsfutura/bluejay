@@ -1527,24 +1527,16 @@ extension Bluejay: CBCentralManagerDelegate {
      This should only be called when the current operation in the queue is a `Scan` task.
     */
     public func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
-        // let peripheralString = advertisementData[CBAdvertisementDataLocalNameKey] ?? peripheral.identifier.uuidString
-        // log("Did discover: \(peripheralString)")
-
-        if isRestoring, isRestoringScan, let restorer = backgroundRestorer {
+        if isRestoring, isRestoringScan, let restorer = scanRestorer {
+            log("Scanner recovered. Did discover periheral: \(peripheral.identifier.uuidString)")
             let identifier = PeripheralIdentifier(uuid: peripheral.identifier, name: peripheral.name)
-            let backgroundRestoreCompletion = restorer.didRestoreConnection(to: identifier)
-            
-            switch backgroundRestoreCompletion {
-            case .callback(let userCallback):
-                userCallback()
-            case .continue:
-                break
-            }
+            restorer.didRestoreScan(discovery: [ScanDiscovery(peripheralIdentifier: identifier, advertisementPacket: advertisementData, rssi: Int(truncating: RSSI))])
         } else if isScanning {
+            let peripheralString = advertisementData[CBAdvertisementDataLocalNameKey] ?? peripheral.identifier.uuidString
+            log("Did discover: \(peripheralString)")
             queue.process(event: .didDiscoverPeripheral(peripheral, advertisementData, RSSI), error: nil)
         }
     }
-    
 }
 
 /// Allows Bluejay to receive events and delegation from its queue.
