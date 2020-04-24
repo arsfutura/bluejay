@@ -99,10 +99,10 @@ class Connection: Queueable {
 
         debugLog("Connected to: \(peripheral.identifier.name).")
 
+        updateQueue()
+
         callback?(.success(peripheral.identifier))
         callback = nil
-
-        updateQueue()
     }
 
     func fail(_ error: Error) {
@@ -141,10 +141,10 @@ class Connection: Queueable {
         } else {
             debugLog("Failed connecting to: \(peripheral.name ?? peripheral.identifier.uuidString) with error: \(error.localizedDescription)")
 
+            updateQueue()
+
             callback?(.failure(error))
             callback = nil
-
-            updateQueue()
         }
     }
 

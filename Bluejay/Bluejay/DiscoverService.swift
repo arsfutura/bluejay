@@ -52,19 +52,18 @@ class DiscoverService: Operation {
     func success() {
         state = .completed
 
+        updateQueue()
+        
         callback?(.success)
         callback = nil
-
-        updateQueue()
     }
 
     func fail(_ error: Error) {
         state = .failed(error)
 
+        updateQueue()
+
         callback?(.failure(error))
         callback = nil
-
-        updateQueue()
     }
-
 }

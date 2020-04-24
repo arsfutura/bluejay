@@ -61,10 +61,10 @@ class ReadCharacteristic<T: Receivable>: ReadOperation {
 
             debugLog("Read for \(characteristicIdentifier.description) on \(peripheral.identifier) is successful.")
 
+            updateQueue()
+
             callback?(ReadResult<T>(dataResult: .success(value)))
             callback = nil
-
-            updateQueue()
         } else {
             preconditionFailure("Expecting write to \(characteristicIdentifier.description), but received event: \(event)")
         }
@@ -75,10 +75,10 @@ class ReadCharacteristic<T: Receivable>: ReadOperation {
 
         debugLog("Failed reading for \(characteristicIdentifier.description) on \(peripheral.identifier) with error: \(error.localizedDescription)")
 
+        updateQueue()
+
         callback?(.failure(error))
         callback = nil
-
-        updateQueue()
     }
 
 }
