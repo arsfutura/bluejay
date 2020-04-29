@@ -57,7 +57,7 @@ class Queue {
 
         queueable.queue = self
 
-        if isDisconnectionQueued, !cancelAllFlags.isEmpty {
+        if isDisconnectionQueued || !cancelAllFlags.isEmpty {
             queueable.fail(BluejayError.disconnectQueued)
             return
         }
