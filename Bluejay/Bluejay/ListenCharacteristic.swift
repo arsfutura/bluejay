@@ -80,10 +80,10 @@ class ListenCharacteristic: Operation {
                 debugLog("Stopped listening to \(characteristicIdentifier.description) on \(peripheral.name ?? peripheral.identifier.uuidString).")
             }
 
-            updateQueue()
-
             callback?(.success)
             callback = nil
+
+            updateQueue()
         } else {
             preconditionFailure(
                 "Expecting notification state update to \(characteristicIdentifier.uuid), but received event: \(event)"
@@ -96,9 +96,10 @@ class ListenCharacteristic: Operation {
 
         debugLog("Failed listening to \(characteristicIdentifier.description) on \(peripheral.name ?? peripheral.identifier.uuidString) with error: \(error.localizedDescription)")
 
-        updateQueue()
         callback?(.failure(error))
         callback = nil
+
+        updateQueue()
     }
 
 }

@@ -68,9 +68,10 @@ class Disconnection: Queueable {
 
         debugLog("Failed disconnecting from: \(peripheral.name ?? peripheral.identifier.uuidString) with error: \(error.localizedDescription)")
 
-        updateQueue()
-
         callback?(.failure(error))
         callback = nil
+
+        updateQueue()
     }
+
 }

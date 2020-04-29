@@ -73,9 +73,10 @@ class WriteCharacteristic<T: Sendable>: Operation {
 
             debugLog("Write to \(characteristicIdentifier.description) on \(peripheral.identifier) is successful.")
 
-            updateQueue()
             callback?(.success)
             callback = nil
+
+            updateQueue()
         } else {
             preconditionFailure("Expecting write to \(characteristicIdentifier.description), but received event: \(event)")
         }
@@ -85,11 +86,11 @@ class WriteCharacteristic<T: Sendable>: Operation {
         state = .failed(error)
 
         debugLog("Failed writing to \(characteristicIdentifier.description) on \(peripheral.identifier) with error: \(error.localizedDescription)")
-        
-        updateQueue()
 
         callback?(.failure(error))
         callback = nil
+
+        updateQueue()
     }
 
 }
