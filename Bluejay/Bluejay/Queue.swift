@@ -130,18 +130,21 @@ class Queue {
                 }
             }
         }
-
+        
         if isCBCentralManagerReady {
-            precondition(queue.isEmpty, "Queue is active and is not emptied at the end of cancel all.")
-        } else {
+            if let first = queue.first {
+                if !first.state.isFinished || queue.count > 1 {
+                    fatalError("Queue is active and is not emptied at the end of cancel all.")
+                }
+            }        } else {
             precondition(!queue.contains { queueable -> Bool in
                 !queueable.state.isFinished
-            }, "Queue is inactive but still contains unfinished queueable(s) at the end of cancel all.")
+                }, "Queue is inactive but still contains unfinished queueable(s) at the end of cancel all.")
         }
         
         _ = cancelAllFlags.popLast()
     }
-
+    
     func stopScanning(error: Error? = nil) {
         guard let scan = scan else {
             debugLog("Stop scanning requested but no scan is found in the queue.")
