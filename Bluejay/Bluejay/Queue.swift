@@ -57,7 +57,7 @@ class Queue {
 
         queueable.queue = self
 
-        if isDisconnectionQueued {
+        if isDisconnectionQueued || !cancelAllFlags.isEmpty {
             queueable.fail(BluejayError.disconnectQueued)
             return
         }
@@ -104,12 +104,15 @@ class Queue {
 
     // MARK: - Cancellation
 
+    private var cancelAllFlags: [Bool] = []
     @objc func cancelAll(error: Error = BluejayError.cancelled) {
         if queue.isEmpty {
             debugLog("Queue is empty, nothing to cancel.")
             return
         }
 
+        cancelAllFlags.append(true)
+        
         debugLog("Queue will now cancel all operations with error: \(error.localizedDescription)")
 
         if isScanning {
@@ -122,20 +125,26 @@ class Queue {
             if let connection = queueable as? Connection {
                 if !connection.state.isFinished {
                     debugLog("Interrupting cancel all to terminate a pending connection...")
+                    _ = cancelAllFlags.popLast()
                     return
                 }
             }
         }
-
+        
         if isCBCentralManagerReady {
-            precondition(queue.isEmpty, "Queue is active and is not emptied at the end of cancel all.")
-        } else {
+            if let first = queue.first {
+                if !first.state.isFinished || queue.count > 1 {
+                    fatalError("Queue is active and is not emptied at the end of cancel all.")
+                }
+            }        } else {
             precondition(!queue.contains { queueable -> Bool in
                 !queueable.state.isFinished
-            }, "Queue is inactive but still contains unfinished queueable(s) at the end of cancel all.")
+                }, "Queue is inactive but still contains unfinished queueable(s) at the end of cancel all.")
         }
+        
+        _ = cancelAllFlags.popLast()
     }
-
+    
     func stopScanning(error: Error? = nil) {
         guard let scan = scan else {
             debugLog("Stop scanning requested but no scan is found in the queue.")
